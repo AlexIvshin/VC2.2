@@ -3,6 +3,7 @@
 from subprocess import check_output, call
 import sys
 import random
+
 import dialog as dg
 
 from model_voice import Voice
