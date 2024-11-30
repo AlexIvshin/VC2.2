@@ -531,7 +531,7 @@ class ExchangeRates:
                 index = max_len_bank_name - len(key)
                 print(f'{" " * index}{pstring}')
 
-            bank_name = soup_banks_names[0].text.replace('\n', '')
+            bank_name = soup_banks_names[0].text.replace('\n', '').rstrip()
             buy = round(float(soup_buy[0].text), 2)
             sale = round(float(soup_sale[0].text), 2)
 
