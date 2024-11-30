@@ -398,19 +398,22 @@ class Polyhistor:
         if not ss.check_internet():
             return
         url_joke = 'https://www.anekdot.ru/random/anekdot/'
-        r = requests.get(url_joke)
-        if r.status_code != 200:
-            print('Status code: ', r.status_code)
-            return talk('Упс! Целевой сервер не отвечает.')
+        try:
+            r = requests.get(url_joke)
+            if r.status_code != 200:
+                print('Status code: ', r.status_code)
+                return talk('Упс! Целевой сервер не отвечает.')
 
-        soup = BeautifulSoup(r.text, 'html.parser')
-        anecdot = soup.find_all('div', class_="text")
-        joke = []
-        for article in anecdot:
-            article_title = article.text.strip()
-            res = re.sub(r'[^A-zА-яё0123456789́\'".,:;!?-—%]', ' ', str(article_title)).replace('.', '. ')
-            joke.append(res)
-        return random.choice(joke)
+            soup = BeautifulSoup(r.text, 'html.parser')
+            anecdot = soup.find_all('div', class_="text")
+            joke = []
+            for article in anecdot:
+                article_title = article.text.strip()
+                res = re.sub(r'[^A-zА-яё0123456789́\'".,:;!?-—%]', ' ', str(article_title)).replace('.', '. ')
+                joke.append(res)
+            return random.choice(joke)
+        except requests.exceptions.ConnectTimeout:
+            talk('Упс! Время ожидания превышено! Целевой сервер не отвечает.')
 
     @staticmethod
     def get_fact() -> Optional[Any]:
@@ -439,9 +442,10 @@ class Polyhistor:
             if 'поговорк' in self.commandline or 'пословиц' in self.commandline:
                 result = self.get_saying()
 
-            talk(result, speech_rate=100)
-            time.sleep(0.2)
-            talk(random.choice(dg.qustion_replay))
+            if result:
+                talk(result, speech_rate=100)
+                time.sleep(0.2)
+                talk(random.choice(dg.qustion_replay))
 
         except requests.exceptions.ConnectionError:
             talk('Упс! Что-то не так пошло! Скорее всего сеть отсутствует.')
