@@ -341,28 +341,32 @@ class Sinoptik:
 
             talk(random.choice(dg.answer_ok))
             soup = BeautifulSoup(r.text, 'html.parser')
-            temp = soup.find('p', class_="today-temp").text
-            description = soup.find('div', class_="description").text
+            temp = soup.find('p', class_="_6fYCPKSx").text
+            current_temp = temp.replace('°C', ' по цельсию')
+            description = soup.find('p', class_="DGqLtBkd").text
             description = description.strip() \
                 .replace('вечера', 'вéчера') \
                 .replace('самого', 'са́мого') \
                 .replace('облачка', 'о́блачка') \
                 .replace('утра', 'утра́')
-            min_res = soup.find_all('div', class_="min")
-            max_res = soup.find_all('div', class_="max")
-            light = soup.find_all('div', class_="infoDaylight")
-            temps = soup.find_all('tr', class_='temperature')
-            day_light = re.sub(r'[^0123456789:-]', ' ', str(light)).replace(' ', '')
-            min_temps = re.sub(r'[^0123456789+°-]', ' ', str(min_res)).replace(' ', '').split('°')
-            max_temps = re.sub(r'[^0123456789+°-]', ' ', str(max_res)).replace(' ', '').split('°')
-            temps = re.sub(r'[^0123456789+°-]', ' ', str(temps)).replace(' ', '').split('°')
-            current_temp = temp.replace('°C', ' по цельсию')
+
+            temps = []
+            for wrapper in soup.find_all('div', class_="XyT+Rm+n"):
+                temps.append(re.sub(r'[^0123456789+°-]', ' ', wrapper.text).split('°'))
+
+            day_light = []
+            for wrapper in soup.find_all('span', class_="MorhR6xi"):
+                day_light.append(re.sub(r'[^0123456789:-]', ' ', wrapper.text))
+
+            temps_td = []
+            for wrapper in soup.find_all('tr', class_='LpESMjaV wqY8mYtV'):
+                temps_td = wrapper.text.split('°')
 
             week_data = [
-                ['Min°C', min_temps[0], min_temps[1], min_temps[2],
-                 min_temps[3], min_temps[4], min_temps[5], min_temps[6]],
-                ['Max°C', max_temps[0], max_temps[1], max_temps[2],
-                 max_temps[3], max_temps[4], max_temps[5], max_temps[6]]
+                ['Min°C', temps[0][0], temps[1][0], temps[2][0],
+                 temps[3][0], temps[4][0], temps[5][0], temps[6][0]],
+                ['Max°C', temps[0][1], temps[1][1], temps[2][1],
+                 temps[3][1], temps[4][1], temps[5][1], temps[6][1]]
             ]
 
             current_weekday = int(date.isoweekday(date.today()))
@@ -373,14 +377,11 @@ class Sinoptik:
                 self.weekdays[self.get_week_day(6)]
             ]
 
-            daily_temp = []
-            [daily_temp.append(t[1:]) for t in temps]
-
-            daily_temp_data = [['°C', daily_temp[1], daily_temp[2], daily_temp[3],
-                                daily_temp[4], daily_temp[5], daily_temp[6], daily_temp[7]]]
+            daily_temp_data = [['°C', temps_td[1], temps_td[2], temps_td[3], temps_td[4],
+                                temps_td[5], temps_td[6], temps_td[7]]]
             col_names_daily_temp = ['t', '3:00', '6:00', '9:00', '12:00', '15:00', '18:00', '21:00']
 
-            print(f'{dt.today().strftime("%d-%m-%Y")} / Восход: {day_light[0:5]} / Закат: {day_light[5:]}')
+            print(f'{dt.today().strftime("%d-%m-%Y")} / Восход: {day_light[0]} / Закат: {day_light[1]}')
             print(tb(daily_temp_data, headers=col_names_daily_temp, tablefmt="mixed_outline", numalign="center"))
             print(tb(week_data, headers=col_names, tablefmt="mixed_outline", numalign="center"))
             talk(f'Сейчас, {current_temp}. {description}', speech_rate=100)
