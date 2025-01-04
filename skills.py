@@ -156,10 +156,14 @@ class SearchEngine:
 
     @classmethod
     def exception_words(cls, wiki_error=False) -> None:
-        text = 'Упс! Что-то не так пошло! Скорее всего сеть отсутствует.'
         if wiki_error:
-            text = 'Необходим более точный запрос!'
-        talk(text)
+            talk('Необходим более точный запрос!')
+            search_words = get_input()
+            if search_words:
+                return cls.wiki_search(search_words)
+        else:
+            talk('Упс! Что-то не так пошло! Скорее всего сеть отсутствует.')
+
 
     @classmethod
     def google_search(cls, text: str) -> None:
@@ -212,7 +216,7 @@ class SearchEngine:
 
         except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError, OSError):
             cls.exception_words()
-        except (cls.wikipedia.exceptions.DisambiguationError, cls.wikipedia.exceptions.PageError):
+        except (cls.wikipedia.exceptions.DisambiguationError, cls.wikipedia.exceptions.PageError, IndexError):
             cls.exception_words(wiki_error=True)
 
     @classmethod
