@@ -70,7 +70,6 @@ def check_yesno_onoff(command: str, dictionary: dict) -> str:
 def check_hand_input(words: str) -> bool:
     input_words = ['ручной', 'клавиатура', 'клавиатуры', 'ввод', 'вот', 'ручную']
     if len(set(words.split()) & set(input_words)) > 1:
-        talk('Жду ввода с клавиатуры!')
         return True
 
 

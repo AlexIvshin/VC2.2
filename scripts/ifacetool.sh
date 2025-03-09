@@ -47,6 +47,7 @@ Choice_exit() {
             [yY][eE][sS]|[yY])
                 clear
                 return 0
+                # shellcheck disable=SC2317
                 break; ;;
 
             [nN][oO]|[nN])

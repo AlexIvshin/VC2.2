@@ -141,7 +141,7 @@ class SearchEngine:
     def get_result(self) -> None:
         if not self.search_words or not ss.check_internet():
             return
-        if not self.confirm:
+        if not self.confirm and not ss.check_hand_input(self.commandline) and self.search_words:
             return talk(f'Искать {self.search_words}?')
 
         talk(random.choice(dg.answer_ok))
@@ -158,9 +158,7 @@ class SearchEngine:
     def exception_words(cls, wiki_error=False) -> None:
         if wiki_error:
             talk('Необходим более точный запрос!')
-            search_words = get_input()
-            if search_words:
-                return cls.wiki_search(search_words)
+            return
         else:
             talk('Упс! Что-то не так пошло! Скорее всего сеть отсутствует.')
 
@@ -345,9 +343,9 @@ class Sinoptik:
 
             talk(random.choice(dg.answer_ok))
             soup = BeautifulSoup(r.text, 'html.parser')
-            temp = soup.find('p', class_="_6fYCPKSx").text
+            temp = soup.find('p', class_="R1ENpvZz").text
             current_temp = temp.replace('°C', ' по цельсию')
-            description = soup.find('p', class_="DGqLtBkd").text
+            description = soup.find('p', class_="GVzzzKDV").text
             description = description.strip() \
                 .replace('вечера', 'вéчера') \
                 .replace('самого', 'са́мого') \
@@ -355,15 +353,15 @@ class Sinoptik:
                 .replace('утра', 'утра́')
 
             temps = []
-            for wrapper in soup.find_all('div', class_="XyT+Rm+n"):
+            for wrapper in soup.find_all('div', class_="oOVtmpFl"):
                 temps.append(re.sub(r'[^0123456789+°-]', ' ', wrapper.text).split('°'))
 
             day_light = []
-            for wrapper in soup.find_all('span', class_="MorhR6xi"):
+            for wrapper in soup.find_all('span', class_="WJJwi+RN"):
                 day_light.append(re.sub(r'[^0123456789:-]', ' ', wrapper.text))
 
             temps_td = []
-            for wrapper in soup.find_all('tr', class_='LpESMjaV wqY8mYtV'):
+            for wrapper in soup.find_all('tr', class_='qaGibDrT eP2j56aD'):
                 temps_td = wrapper.text.split('°')
 
             week_data = [

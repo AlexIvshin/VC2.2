@@ -1,6 +1,9 @@
 import tkinter as tk
 
+from model_voice import Voice
+talk = Voice().speaks
 input_text = ''
+
 
 
 def keyboard_input(entry_text: str = '') -> None:
@@ -56,6 +59,7 @@ def keyboard_input(entry_text: str = '') -> None:
 
 
 def get_input(text='') -> str:
+    talk('Жду ввода с клавиатуры!')
     keyboard_input(text)
     print(input_text)
     return input_text
